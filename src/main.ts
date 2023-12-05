@@ -33,6 +33,7 @@ client.on("interactionCreate", async interaction => {
 function generateUltraResponse(): string {
   if(!responsesLoaded) return "budddyyy"
   let randomIndex = getRandomIndex();
+  console.log(`random message index: ${randomIndex}, sending message: ${responses[randomIndex]}`);
   return responses[randomIndex];
 }
 
