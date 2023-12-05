@@ -22,7 +22,6 @@ async function periodicallySendUltraMessage(channel: Channel) {
 }
 
 client.on("interactionCreate", async interaction => {
-  console.log(interaction);
   if (!interaction.isChatInputCommand()) return
 
   if (interaction.commandName === "getanultrareply") {
