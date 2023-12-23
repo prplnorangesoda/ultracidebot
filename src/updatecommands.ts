@@ -7,6 +7,10 @@ const commands = [
     name: 'getanultrareply',
     description: 'generate an ultracide response',
   },
+  {
+    name: 'setchannel',
+    description: 'sets the current channel as the channel to send ultracide messages into'
+  }
 ];
 
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN!);

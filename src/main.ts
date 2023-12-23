@@ -6,16 +6,21 @@ dotenv.config();
 let responsesLoaded = false;
 let responses: string[] = [];
 let lastResponse: number;
+let channelIdToSendMessagesPeriodicallyInto = "1181427778747383821"
 
 const client = new Client({intents: GatewayIntentBits.Guilds})
 client.on("ready", readyClient => {
   console.log(`logged in ${readyClient.user.tag}`)
-  let val = readyClient.channels.cache.get("1181427778747383821")
-  if(val) setInterval(periodicallySendUltraMessage, 30000, val)
-  else throw new Error("no funny channel found")
+  setInterval(periodicallySendUltraMessage, 30000)
 })
 
-async function periodicallySendUltraMessage(channel: Channel) {
+async function periodicallySendUltraMessage() {
+  if (!client.isReady()) return;
+  let channel = client.channels.cache.get(channelIdToSendMessagesPeriodicallyInto)
+  if(channel === undefined) {
+    console.error("babes, no channel found with id", channelIdToSendMessagesPeriodicallyInto)
+    return;
+  }
   if(channel.isTextBased()) {
     channel.send(generateUltraResponse())
   }
@@ -27,6 +32,15 @@ client.on("interactionCreate", async interaction => {
   if (interaction.commandName === "getanultrareply") {
     await interaction.reply(generateUltraResponse())
   }
+  if (interaction.commandName === "setchannel") {
+    try {
+    channelIdToSendMessagesPeriodicallyInto = interaction.channelId;
+    await interaction.reply("set channel successfully")
+    }
+    catch (err) {
+      console.error("error setting new channel id:", err)
+    }
+  }
 })
 
 function generateUltraResponse(): string {
@@ -37,7 +51,7 @@ function generateUltraResponse(): string {
 }
 
 function getRandomIndex() {
-  let randomIndex = Math.floor(Math.random() * (responses.length + 1));
+  let randomIndex = Math.floor(Math.random() * (responses.length));
   if (randomIndex == lastResponse) randomIndex = getRandomIndex();
   lastResponse = randomIndex;
   return randomIndex;
