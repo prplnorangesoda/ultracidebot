@@ -2,5 +2,15 @@
   "dependencies": {
     "discord.js": "^14.14.1",
     "dotenv": "^16.3.1"
+  },
+  "scripts": {
+    "dev": "tsc-watch --onSuccess \"node dist/main.js\"",
+    "build": "tsc",
+    "run": "node dist/main.js",
+    "commands": "npm run build && node dist/updatecommands.js"
+  },
+  "devDependencies": {
+    "tsc-watch": "^6.0.4",
+    "typescript": "^5.3.3"
   }
 }
