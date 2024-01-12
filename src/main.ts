@@ -1,12 +1,12 @@
-import { Channel, Client,GatewayIntentBits } from "discord.js"
-import fs from "fs"
-import dotenv from "dotenv"
-dotenv.config();
+import { Channel, Client,GatewayIntentBits } from "discord.js";
+import fs from "fs";
 
-let responsesLoaded = false;
-let responses: string[] = [];
-let lastResponse: number;
-let channelIdToSendMessagesPeriodicallyInto = "1181427778747383821"
+import { config } from "dotenv";
+config();
+
+let responses: string[] = fs.readFileSync("ultraresponses.txt",{ encoding: "utf-8" }).split('\r\n');
+let lastResponseIndex: number;
+let ChannelIdToSpam: string = process.env.SPAM_CHANNEL_ID;
 
 const client = new Client({intents: GatewayIntentBits.Guilds})
 client.on("ready", readyClient => {
@@ -16,9 +16,9 @@ client.on("ready", readyClient => {
 
 async function periodicallySendUltraMessage() {
   if (!client.isReady()) return;
-  let channel = client.channels.cache.get(channelIdToSendMessagesPeriodicallyInto)
+  let channel = client.channels.cache.get(ChannelIdToSpam)
   if(channel === undefined) {
-    console.error("babes, no channel found with id", channelIdToSendMessagesPeriodicallyInto)
+    console.error("babes, no channel found with id", ChannelIdToSpam)
     return;
   }
   if(channel.isTextBased()) {
@@ -34,8 +34,8 @@ client.on("interactionCreate", async interaction => {
   }
   if (interaction.commandName === "setchannel") {
     try {
-    channelIdToSendMessagesPeriodicallyInto = interaction.channelId;
-    await interaction.reply("set channel successfully")
+      ChannelIdToSpam = interaction.channelId;
+      await interaction.reply("set channel successfully")
     }
     catch (err) {
       console.error("error setting new channel id:", err)
@@ -44,7 +44,6 @@ client.on("interactionCreate", async interaction => {
 })
 
 function generateUltraResponse(): string {
-  if(!responsesLoaded) return "budddyyy"
   let randomIndex = getRandomIndex();
   console.log(`random message index: ${randomIndex}, sending message: ${responses[randomIndex]}`);
   return responses[randomIndex];
@@ -52,17 +51,9 @@ function generateUltraResponse(): string {
 
 function getRandomIndex() {
   let randomIndex = Math.floor(Math.random() * (responses.length));
-  if (randomIndex == lastResponse) randomIndex = getRandomIndex();
-  lastResponse = randomIndex;
+  if (randomIndex == lastResponseIndex) randomIndex = getRandomIndex();
+  lastResponseIndex = randomIndex;
   return randomIndex;
 }
-
-function getReadyToGenerateUltraResponse(): void {
-  let responsesFromFile = fs.readFileSync("ultraresponses.txt",{encoding: "utf-8"})
-  responses = responsesFromFile.split("\r\n")
-  responsesLoaded = true;
-}
-
-getReadyToGenerateUltraResponse();
 
 client.login(process.env.TOKEN!)

@@ -17,6 +17,6 @@ const rest = new REST({ version: '10' }).setToken(process.env.TOKEN!);
 
 console.log('Started refreshing application (/) commands.');
 
-rest.put(Routes.applicationCommands(process.env.ID!), { body: commands }).then(() => {
+rest.put(Routes.applicationCommands(process.env.APPLICATION_ID!), { body: commands }).then(() => {
   console.log('Successfully reloaded application (/) commands.')
 });
